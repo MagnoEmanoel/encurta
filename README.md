@@ -117,4 +117,4 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](L
 
 ## 📬 Contato
 
-Desenvolvido por Magno Emanoel - [contato@seunegocio.com](mailto:contato@seunegocio.com)
+Desenvolvido por Magno Emanoel - [magno_emanoel@outlook.com](mailto:magno_emanoel@outlook.com)
