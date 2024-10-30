@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encurta - Link e QR Code</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon"> <!-- Favicon -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"> <!-- Fonte Montserrat -->
+    <!-- Favicon -->
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <!-- Fonte Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif; /* Fonte Montserrat aplicada */
@@ -16,7 +18,7 @@
             justify-content: center; /* Centraliza horizontalmente */
             align-items: center; /* Centraliza verticalmente */
             flex-direction: column; /* Alinha os elementos em coluna */
-            background-image: url('images/happy-woman.jpg'); /* Imagem de fundo */
+            background-image: url('/images/happy-woman.jpg'); /* Imagem de fundo */
             background-size: cover; /* Cobrir toda a tela */
             background-position: center; /* Centraliza a imagem */
         }
@@ -136,7 +138,7 @@
     <div class="container">
         <form id="shortenForm">
             <div class="title">
-                <img src="images/icon.png" alt="Ícone"> <!-- Ícone ao lado do título -->
+                <img src="/images/icon.png" alt="Ícone"> <!-- Ícone ao lado do título -->
                 <span>Encurta Link & QR Code</span>
             </div>
             <input type="url" id="longUrl" placeholder="Insira o link..." required>
