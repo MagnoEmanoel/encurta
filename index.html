@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encurta - Link e QR Code</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"> <!-- Favicon -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"> <!-- Fonte Montserrat -->
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif; /* Fonte Montserrat aplicada */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Garante que o corpo tenha no mínimo a altura da janela */
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
+            flex-direction: column; /* Alinha os elementos em coluna */
+            background-image: url('images/happy-woman.jpg'); /* Imagem de fundo */
+            background-size: cover; /* Cobrir toda a tela */
+            background-position: center; /* Centraliza a imagem */
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9); /* Fundo branco com leve transparência */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra do formulário */
+            width: 60%; /* Ajustado para 60% para combinar com margin-right: 40% */
+            max-width: 500px; /* Largura máxima do formulário */
+            text-align: center; /* Centraliza o texto */
+            margin-right: 40%; /* Restaurado conforme solicitado */
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px; /* Margem inferior do título */
+            font-size: 24px; /* Tamanho do título */
+        }
+        .title img {
+            width: 32px; /* Tamanho do ícone */
+            height: 32px;
+            margin-right: 10px; /* Espaço entre o ícone e o texto */
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0; /* Margem superior e inferior */
+            border-radius: 4px;
+            border: 1px solid #ccc; /* Borda leve */
+            font-size: 16px;
+            width: 100%; /* Largura total dos inputs */
+            box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+        }
+        button {
+            background-color: #00995D; /* Cor do botão */
+            color: white;
+            cursor: pointer;
+            border: none; /* Remove a borda do botão */
+        }
+        button:hover {
+            background-color: #007A4C; /* Cor do botão ao passar o mouse */
+        }
+        #result {
+            margin-top: 20px;
+            color: #333; /* Cor do texto no resultado */
+            text-align: left; /* Alinha o texto à esquerda */
+        }
+        .shortened-link {
+            background-color: #f8f9fa; /* Fundo claro para o link */
+            padding: 10px;
+            border-radius: 4px; /* Bordas arredondadas */
+            margin: 10px 0; /* Margem superior e inferior */
+            border: 1px solid #ddd; /* Borda leve */
+            word-wrap: break-word; /* Quebra de linha em caso de URLs longas */
+        }
+        #qrCode {
+            margin-top: 10px; /* Margem superior para o QR Code */
+            display: none; /* Inicialmente oculto */
+            text-align: center; /* Centraliza o QR Code */
+        }
+        .download-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center; /* Centraliza os botões */
+            flex-wrap: wrap; /* Permite que os botões se movam para a linha seguinte se não houver espaço */
+        }
+        .download-buttons a {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #00995D; /* Cor do botão de download */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .download-buttons a:hover {
+            background-color: #007A4C; /* Cor ao passar o mouse */
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro com leve transparência */
+            color: white;
+            text-align: center; /* Centraliza o texto no footer */
+            padding: 1px 0; /* Espaçamento superior e inferior */
+            width: 100%; /* Largura total */
+            position: fixed; /* Mantém o footer fixo na janela */
+            bottom: 0; /* Alinha à parte inferior da tela */
+            left: 0; /* Alinha à esquerda */
+            font-size: 14px; /* Tamanho da fonte */
+            line-height: 20px; /* Altura da linha */
+            letter-spacing: normal; /* Espaçamento entre letras */
+        }
+        footer a {
+            color: rgb(255, 255, 255);
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px; /* Menos padding em telas pequenas */
+                width: 90%; /* Ajusta a largura para telas pequenas */
+                margin: 0 auto; /* Centraliza a container */
+                margin-right: 0; /* Remove margin-right: 40% em telas pequenas */
+            }
+            .title {
+                font-size: 20px; /* Reduz o tamanho do título em telas pequenas */
+            }
+            button {
+                padding: 8px; /* Menos padding em botões em telas pequenas */
+            }
+            input {
+                padding: 8px; /* Menos padding em inputs em telas pequenas */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="shortenForm">
+            <div class="title">
+                <img src="images/icon.png" alt="Ícone"> <!-- Ícone ao lado do título -->
+                <span>Encurta Link & QR Code</span>
+            </div>
+            <input type="url" id="longUrl" placeholder="Insira o link..." required>
+            <button type="submit">Encurtar e Gerar QR</button>
+            <div id="result"></div> <!-- Resultado agora está dentro do formulário -->
+            <div id="qrCode"></div> <!-- Espaço para o QR Code -->
+        </form>
+    </div>
+
+    <footer>
+        <p>Magno Emanoel - Todos os direitos reservados &copy; 2024 | <a href="mailto:contato@seunegocio.com">Entre em contato</a></p>
+    </footer>
+
+    <script>
+        // Função para baixar o arquivo via Blob e forçar o download automático
+        async function downloadFile(url, filename) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link); // Necessário para Firefox
+                link.click();
+                document.body.removeChild(link); // Remove o link após o clique
+                URL.revokeObjectURL(link.href); // Limpa o objeto URL para liberar memória
+            } catch (error) {
+                console.error('Erro ao baixar o arquivo:', error);
+            }
+        }
+
+        // Função para gerar o QR Code e adicionar opções de download
+        function generateQRCode(url) {
+            const qrCodeContainer = document.getElementById('qrCode');
+
+            // Limpa o QR Code anterior e botões
+            qrCodeContainer.innerHTML = '';
+
+            if (!url) {
+                alert('Por favor, insira uma URL válida.');
+                return;
+            }
+
+            // Gerar o QR Code em PNG
+            const pngUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+            const pngImg = document.createElement('img');
+            pngImg.src = pngUrl;
+            pngImg.alt = 'QR Code';
+            qrCodeContainer.appendChild(pngImg);
+
+            // Gerar o QR Code em SVG
+            const svgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&format=svg`;
+
+            // Contêiner para os botões de download
+            const btnContainer = document.createElement('div');
+            btnContainer.classList.add('download-buttons');
+
+            // Criar botão de download PNG
+            const pngDownloadBtn = document.createElement('a');
+            pngDownloadBtn.textContent = 'Download PNG';
+            pngDownloadBtn.href = "javascript:void(0);"; // Previne navegação
+            pngDownloadBtn.addEventListener('click', () => downloadFile(pngUrl, 'qr-code.png'));
+
+            // Criar botão de download SVG
+            const svgDownloadBtn = document.createElement('a');
+            svgDownloadBtn.textContent = 'Download SVG';
+            svgDownloadBtn.href = "javascript:void(0);"; // Previne navegação
+            svgDownloadBtn.addEventListener('click', () => downloadFile(svgUrl, 'qr-code.svg'));
+
+            // Adicionar os botões ao contêiner de botões
+            btnContainer.appendChild(pngDownloadBtn);
+            btnContainer.appendChild(svgDownloadBtn);
+
+            // Adicionar o contêiner de botões ao QR Code container
+            qrCodeContainer.appendChild(btnContainer);
+            qrCodeContainer.style.display = 'block'; // Mostra o QR Code
+        }
+
+        document.getElementById('shortenForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const longUrl = document.getElementById('longUrl').value;
+            const resultDiv = document.getElementById('result');
+
+            try {
+                const response = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: longUrl })
+                });
+
+                const data = await response.json();
+
+                if (!data.error) {
+                    const shortUrl = data.shortUrl; // URL encurtada
+                    resultDiv.innerHTML = `
+                        <p><strong>Link encurtado:</strong> <span class="shortened-link">${shortUrl}</span></p>
+                        <button onclick="copyToClipboard('${shortUrl}')">Copiar Link</button>
+                    `;
+
+                    // Gerar QR Code
+                    generateQRCode(shortUrl);
+                } else {
+                    resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error(error);
+                resultDiv.innerHTML = `<p>Ocorreu um erro inesperado.</p>`;
+            }
+        });
+
+        // Função para copiar o link para a área de transferência
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copiado para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar o link:', err);
+            });
+        }
+    </script>
+</body>
+</html>
