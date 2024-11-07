@@ -23,21 +23,36 @@
             background-position: center;
         }
         .navbar {
-            background-color: rgba(0, 0, 0, 0.7); /* Cor de fundo similar ao footer */
+            background-color: rgba(0, 0, 0, 0.7);
             color: white;
             display: flex;
-            justify-content: center;
-            padding: 10px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
+            box-sizing: border-box;
+        }
+        .navbar-title {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+        .navbar-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        .navbar-links {
+            display: flex;
+            gap: 15px;
         }
         .navbar a {
             color: white;
             text-decoration: none;
-            margin: 0 15px;
             font-size: 16px;
         }
         .navbar a:hover {
@@ -51,7 +66,7 @@
             width: 60%;
             max-width: 500px;
             text-align: center;
-            margin-right: 40%;
+            margin-top: 80px; /* Adiciona espaço para a navbar */
         }
         .title {
             display: flex;
@@ -136,20 +151,17 @@
             text-decoration: underline;
         }
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                width: 90%;
-                margin: 0 auto;
-                margin-right: 0;
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            .title {
-                font-size: 20px;
+            .navbar-links {
+                margin-top: 10px;
+                flex-direction: column;
+                width: 100%;
             }
-            button {
-                padding: 8px;
-            }
-            input {
-                padding: 8px;
+            .navbar-links a {
+                padding: 5px 0;
             }
         }
     </style>
@@ -157,10 +169,16 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="https://github.com/MagnoEmanoel" target="_blank">GitHub</a>
-        <a href="https://www.linkedin.com/in/magnoemanoel/" target="_blank">LinkedIn</a>
-        <a href="#">Sobre</a>
-        <a href="#">Outros Projetos</a>
+        <div class="navbar-title">
+            <img src="/images/link.png" alt="Ícone" class="navbar-icon">
+            <span>Encurta Link & QR Code</span>
+        </div>
+        <div class="navbar-links">
+            <a href="https://github.com/MagnoEmanoel/encurta" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/magnoemanoel/" target="_blank">LinkedIn</a>
+            <a href="#">Sobre</a>
+            <a href="#">Outros Projetos</a>
+        </div>
     </nav>
 
     <div class="container">
