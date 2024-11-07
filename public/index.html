@@ -229,7 +229,13 @@
     <footer>
         <p>Magno Emanoel - Todos os direitos reservados &copy; 2024 | <a href="mailto:magno_emanoel@outlook.com">Entre em contato</a></p>
     </footer>  
+
     <script>
+        function toggleMenu() {
+            const navbarLinks = document.querySelector('.navbar-links');
+            navbarLinks.classList.toggle('active');
+        }
+
         async function downloadFile(url, filename) {
             try {
                 const response = await fetch(url);
