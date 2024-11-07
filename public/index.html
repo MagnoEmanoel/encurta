@@ -58,6 +58,42 @@
         .navbar a:hover {
             text-decoration: underline;
         }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+        /* Esconde os links e exibe o menu hambúrguer em telas pequenas */
+        @media (max-width: 600px) {
+            .navbar-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                position: absolute;
+                top: 60px;
+                left: 0;
+                text-align: center;
+                padding: 10px 0;
+            }
+            .navbar-links a {
+                padding: 10px 0;
+                font-size: 18px;
+            }
+            .navbar-links.active {
+                display: flex;
+            }
+            .hamburger {
+                display: flex;
+            }
+        }
         .container {
             background: rgba(255, 255, 255, 0.9);
             padding: 30px;
@@ -67,7 +103,7 @@
             max-width: 500px;
             text-align: center;
             margin-top: 40px;
-            margin-left: -400px; 
+            margin-left: -80px;
         }
         .title {
             display: flex;
@@ -151,23 +187,6 @@
             color: rgb(255, 255, 255);
             text-decoration: underline;
         }
-        @media (max-width: 600px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .navbar-links {
-                margin-top: 10px;
-                flex-direction: column;
-                width: 100%;
-            }
-            .navbar-links a {
-                padding: 5px 0;
-            }
-            .container {
-                margin-left: 0; /* Remove margem esquerda em telas pequenas */
-            }
-        }
     </style>
 </head>
 <body>
@@ -182,6 +201,11 @@
             <a href="https://www.linkedin.com/in/magnoemanoel/" target="_blank">LinkedIn</a>
             <a href="#">Sobre</a>
             <a href="#">Outros Projetos</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
     </nav>
 
@@ -200,7 +224,7 @@
 
     <footer>
         <p>Magno Emanoel - Todos os direitos reservados &copy; 2024 | <a href="mailto:magno_emanoel@outlook.com">Entre em contato</a></p>
-    </footer>    
+    </footer>  
 
     <script>
         async function downloadFile(url, filename) {
