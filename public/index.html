@@ -93,6 +93,11 @@
             .hamburger {
                 display: flex;
             }
+            .container {
+                margin-left: auto;
+                margin-right: auto;
+                width: 90%; /* Ajusta largura para caber melhor em telas pequenas */
+            }
         }
         .container {
             background: rgba(255, 255, 255, 0.9);
@@ -102,8 +107,7 @@
             width: 60%;
             max-width: 500px;
             text-align: center;
-            margin-top: 40px;
-            margin-left: -500px;
+            margin-top: 80px;
         }
         .title {
             display: flex;
@@ -225,7 +229,6 @@
     <footer>
         <p>Magno Emanoel - Todos os direitos reservados &copy; 2024 | <a href="mailto:magno_emanoel@outlook.com">Entre em contato</a></p>
     </footer>  
-
     <script>
         async function downloadFile(url, filename) {
             try {
