@@ -259,13 +259,13 @@
                 alert('Por favor, insira uma URL válida.');
                 return;
             }
-            const pngUrl = https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)};
+            const pngUrl = https;//api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)};
             const pngImg = document.createElement('img');
             pngImg.src = pngUrl;
             pngImg.alt = 'QR Code';
             qrCodeContainer.appendChild(pngImg);
 
-            const svgUrl = https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&format=svg;
+            const svgUrl = https;//api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&format=svg;
 
             const btnContainer = document.createElement('div');
             btnContainer.classList.add('download-buttons');
