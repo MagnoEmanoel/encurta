@@ -230,6 +230,7 @@
         <span>Encurta Link &amp; QR Code</span>
       </div>
       <input type="url" id="longUrl" placeholder="Insira o link..." required />
+      <input type="text" id="customShort" placeholder="Customizar link curto (opcional)" />
       <button type="submit">Encurtar e Gerar QR</button>
       <div id="result"></div>
       <div id="qrCode"></div>
@@ -303,12 +304,13 @@
     document.getElementById('shortenForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const longUrl = document.getElementById('longUrl').value;
+      const customShort = document.getElementById('customShort').value;
       const resultDiv = document.getElementById('result');
       try {
         const response = await fetch('/api/shorten', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: longUrl })
+          body: JSON.stringify({ url: longUrl, customShort }),
         });
         const data = await response.json();
         if (!data.error) {
