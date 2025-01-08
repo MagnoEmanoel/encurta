@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
 
 async function shortenLink(req, res) {
     const { url } = req.body;
@@ -8,32 +8,27 @@ async function shortenLink(req, res) {
     }
 
     try {
-        console.log('Iniciando Puppeteer...');
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        });
+        console.log('Enviando requisição para a API CleanURI...');
+        const apiUrl = 'https://cleanuri.com/api/v1/shorten';
 
-        const page = await browser.newPage();
+        // Enviando a URL para encurtar
+        const response = await axios.post(
+            apiUrl,
+            new URLSearchParams({ url: encodeURIComponent(url) }),
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        );
 
-        const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&private=1`;
-        console.log('Acessando URL da API:', apiUrl);
-
-        await page.goto(apiUrl, { waitUntil: 'networkidle2' });
-
-        // Obtenha o corpo da resposta
-        const responseText = await page.evaluate(() => document.body.innerText);
-        console.log('Resposta da API:', responseText);
-
-        await browser.close();
-
-        if (responseText.startsWith('http')) {
-            return res.status(200).json({ error: 0, shortUrl: responseText });
+        // Verifica a resposta da API
+        if (response.data && response.data.result_url) {
+            const shortUrl = response.data.result_url;
+            console.log('URL encurtada com sucesso:', shortUrl);
+            return res.status(200).json({ error: 0, shortUrl });
+        } else {
+            console.error('Erro na resposta da API:', response.data);
+            return res.status(500).json({ error: 1, message: 'Erro ao encurtar a URL' });
         }
-
-        return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
     } catch (error) {
-        console.error('Erro ao acessar a API:', error.message);
+        console.error('Erro ao acessar a API CleanURI:', error.message);
         return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
     }
 }
