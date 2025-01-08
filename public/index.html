@@ -139,6 +139,7 @@
       background-color: rgba(0, 0, 0, 0.7);
     }
     #result {
+      display: none;
       margin-top: 20px;
       color: #333;
       text-align: center;
@@ -318,6 +319,7 @@
       event.preventDefault();
       const longUrl = document.getElementById('longUrl').value;
       const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'none';
 
       try {
         const response = await fetch('/api/shorten', {
@@ -335,13 +337,16 @@
             <a href="${shortUrl}" target="_blank" class="shortened-link">${shortUrl}</a>
             <button onclick="copyToClipboard('${shortUrl}')">Copiar Link</button>
           `;
+          resultDiv.style.display = 'block';
           generateQRCode(shortUrl);
         } else {
           resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
+          resultDiv.style.display = 'block';
         }
       } catch (error) {
         console.error(error);
         resultDiv.innerHTML = `<p>Ocorreu um erro inesperado.</p>`;
+        resultDiv.style.display = 'block';
       }
     });
 
