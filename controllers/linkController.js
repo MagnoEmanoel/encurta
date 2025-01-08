@@ -8,32 +8,49 @@ async function shortenLink(req, res) {
     }
 
     try {
-        console.log(`Enviando dados para a API GoTiny: ${url}`);
-        const requestBody = {
-            input: [
-                {
-                    long: url,
-                    ...(customName && { custom: customName }), // Adiciona customName se fornecido
-                    useFallback: true, // Permite fallback automático
-                },
-            ],
+        const apiUrl = 'https://cutt.ly/api/api.php';
+
+        const params = {
+            key: process.env.CUTTLY_API_KEY,
+            short: url,
         };
 
-        const response = await axios.post('https://gotiny.cc/api', requestBody, {
-            headers: { 'Content-Type': 'application/json' },
-        });
+        if (customName) {
+            params.name = customName;
+        }
 
-        if (response.data && response.data.length > 0) {
-            const shortUrl = `https://gotiny.cc/${response.data[0].code}`;
+        const response = await axios.get(apiUrl, { params });
+
+        if (response.data.url.status === 7) {
+            const shortUrl = response.data.url.shortLink;
             return res.status(200).json({ error: 0, shortUrl });
-        } else {
-            return res.status(500).json({ error: 1, message: 'Resposta inesperada da API GoTiny' });
         }
+
+        let errorMessage = 'Erro ao encurtar a URL';
+        switch (response.data.url.status) {
+            case 2:
+                errorMessage = 'O link informado não é válido';
+                break;
+            case 3:
+                errorMessage = 'O nome customizado já está em uso';
+                break;
+            case 4:
+                errorMessage = 'Chave da API inválida';
+                break;
+            case 5:
+                errorMessage = 'O link contém caracteres inválidos';
+                break;
+            case 6:
+                errorMessage = 'O domínio do link está bloqueado';
+                break;
+            case 8:
+                errorMessage = 'Você atingiu o limite mensal de links encurtados';
+                break;
+        }
+
+        return res.status(400).json({ error: 1, message: errorMessage });
     } catch (error) {
-        console.error('Erro ao acessar a API GoTiny:', error.message);
-        if (error.response) {
-            console.error('Detalhes da resposta da API:', error.response.data);
-        }
+        console.error('Erro ao acessar a API Cuttly:', error.message);
         return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
     }
 }
