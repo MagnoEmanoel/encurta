@@ -1,50 +1,40 @@
 const axios = require('axios');
 
 async function shortenLink(req, res) {
-    const { url } = req.body;
+    const { url, customName } = req.body;
 
-    if (!url || typeof url !== 'string') {
+    if (!url) {
         return res.status(400).json({ error: 1, message: 'A URL válida é obrigatória' });
     }
 
     try {
-        // Codifique e prepare os dados
-        const formData = new URLSearchParams();
-        formData.append('url', url.trim());
-
-        console.log('Enviando dados para CleanURI:', formData.toString());
-
-        // Envie a requisição para a API CleanURI
-        const response = await axios.post(
-            'https://cleanuri.com/api/v1/shorten',
-            formData.toString(),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        console.log(`Enviando dados para a API GoTiny: ${url}`);
+        const requestBody = {
+            input: [
+                {
+                    long: url,
+                    ...(customName && { custom: customName }), // Adiciona customName se fornecido
+                    useFallback: true, // Permite fallback automático
                 },
-            }
-        );
+            ],
+        };
 
-        console.log('Resposta da API CleanURI:', response.data);
-
-        // Verifique se o resultado foi retornado corretamente
-        if (response.data && response.data.result_url) {
-            return res.status(200).json({ error: 0, shortUrl: response.data.result_url });
-        }
-
-        return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
-    } catch (error) {
-        console.error('Erro ao acessar a API CleanURI:', error.message);
-
-        if (error.response) {
-            console.error('Detalhes do erro:', error.response.data);
-        }
-
-        return res.status(500).json({
-            error: 1,
-            message: 'Erro ao acessar a API CleanURI',
+        const response = await axios.post('https://gotiny.cc/api', requestBody, {
+            headers: { 'Content-Type': 'application/json' },
         });
+
+        if (response.data && response.data.length > 0) {
+            const shortUrl = `https://gotiny.cc/${response.data[0].code}`;
+            return res.status(200).json({ error: 0, shortUrl });
+        } else {
+            return res.status(500).json({ error: 1, message: 'Resposta inesperada da API GoTiny' });
+        }
+    } catch (error) {
+        console.error('Erro ao acessar a API GoTiny:', error.message);
+        if (error.response) {
+            console.error('Detalhes da resposta da API:', error.response.data);
+        }
+        return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
     }
 }
 
