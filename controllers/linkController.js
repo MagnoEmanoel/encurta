@@ -8,37 +8,43 @@ async function shortenLink(req, res) {
     }
 
     try {
-        // Codificar a URL e preparar os dados
+        // Codifique e prepare os dados
         const formData = new URLSearchParams();
         formData.append('url', url.trim());
 
-        // Fazer a requisição POST para a API CleanURI
+        console.log('Enviando dados para CleanURI:', formData.toString());
+
+        // Envie a requisição para a API CleanURI
         const response = await axios.post(
             'https://cleanuri.com/api/v1/shorten',
             formData.toString(),
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                 },
             }
         );
 
-        // Verificar se o resultado foi retornado corretamente
+        console.log('Resposta da API CleanURI:', response.data);
+
+        // Verifique se o resultado foi retornado corretamente
         if (response.data && response.data.result_url) {
             return res.status(200).json({ error: 0, shortUrl: response.data.result_url });
         }
 
-        // Retornar erro genérico caso o resultado esteja vazio
         return res.status(500).json({ error: 1, message: 'Erro ao processar a solicitação' });
     } catch (error) {
         console.error('Erro ao acessar a API CleanURI:', error.message);
 
-        // Capturar e retornar detalhes do erro caso seja fornecido
-        if (error.response && error.response.data) {
-            console.error('Detalhes da resposta da API:', error.response.data);
+        if (error.response) {
+            console.error('Detalhes do erro:', error.response.data);
         }
 
-        return res.status(500).json({ error: 1, message: 'Erro ao acessar a API CleanURI' });
+        return res.status(500).json({
+            error: 1,
+            message: 'Erro ao acessar a API CleanURI',
+        });
     }
 }
 
