@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Encurta - Link e QR Code</title>
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * {
       margin: 0;
@@ -59,6 +62,44 @@
       color: #ddd;
       text-decoration: underline;
     }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #fff;
+      margin: 4px 0;
+      transition: 0.4s;
+    }
+    @media (max-width: 600px) {
+      .navbar-links {
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.9);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        margin: 0;
+        padding: 0;
+      }
+      .navbar-links.active {
+        max-height: 240px;
+      }
+      .navbar-links a {
+        display: block;
+        padding: 12px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
     .container {
       background: rgba(255, 255, 255, 0.92);
       padding: 30px;
@@ -102,28 +143,36 @@
     }
     #result {
       margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      color: #333;
+      text-align: left;
+    }
+    .shortened-link {
       background-color: #f8f9fa;
-      text-align: center;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      word-wrap: break-word;
     }
     #qrCode {
-      margin-top: 20px;
+      margin-top: 10px;
+      display: none;
+      text-align: center;
     }
     .download-buttons {
       margin-top: 10px;
       display: flex;
       justify-content: center;
-      gap: 10px;
+      flex-wrap: wrap;
     }
     .download-buttons a {
+      margin: 5px;
       padding: 10px 15px;
       background-color: rgba(0, 0, 0, 0.8);
       color: #fff;
       text-decoration: none;
       border-radius: 4px;
-      font-size: 14px;
+      cursor: pointer;
       transition: background-color 0.2s;
     }
     .download-buttons a:hover {
@@ -145,6 +194,15 @@
       color: #fff;
       text-decoration: underline;
     }
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        margin-top: 70px;
+      }
+      .title {
+        font-size: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -159,6 +217,11 @@
       <a href="#">Sobre</a>
       <a href="#">Outros Projetos</a>
     </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
   </nav>
   <div class="container">
     <form id="shortenForm">
@@ -168,8 +231,8 @@
       </div>
       <input type="url" id="longUrl" placeholder="Insira o link..." required />
       <button type="submit">Encurtar e Gerar QR</button>
-      <div id="result" style="display: none;"></div>
-      <div id="qrCode" style="display: none;"></div>
+      <div id="result"></div>
+      <div id="qrCode"></div>
     </form>
   </div>
   <footer>
@@ -179,36 +242,90 @@
     </p>
   </footer>
   <script>
+    function toggleMenu() {
+      const navbarLinks = document.querySelector('.navbar-links');
+      navbarLinks.classList.toggle('active');
+    }
+    document.addEventListener('click', (event) => {
+      const navbarLinks = document.querySelector('.navbar-links');
+      const hamburger = document.querySelector('.hamburger');
+      if (
+        navbarLinks.classList.contains('active') &&
+        !navbarLinks.contains(event.target) &&
+        !hamburger.contains(event.target)
+      ) {
+        navbarLinks.classList.remove('active');
+      }
+    });
+    async function downloadFile(url, filename) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.error('Erro ao baixar o arquivo:', error);
+      }
+    }
+    function generateQRCode(url) {
+      const qrCodeContainer = document.getElementById('qrCode');
+      qrCodeContainer.innerHTML = '';
+      if (!url) {
+        alert('Por favor, insira uma URL válida.');
+        return;
+      }
+      const pngUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+      const pngImg = document.createElement('img');
+      pngImg.src = pngUrl;
+      pngImg.alt = 'QR Code';
+      qrCodeContainer.appendChild(pngImg);
+      const svgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&format=svg`;
+      const btnContainer = document.createElement('div');
+      btnContainer.classList.add('download-buttons');
+      const pngDownloadBtn = document.createElement('a');
+      pngDownloadBtn.textContent = 'Download PNG';
+      pngDownloadBtn.href = 'javascript:void(0);';
+      pngDownloadBtn.addEventListener('click', () => downloadFile(pngUrl, 'qr-code.png'));
+      const svgDownloadBtn = document.createElement('a');
+      svgDownloadBtn.textContent = 'Download SVG';
+      svgDownloadBtn.href = 'javascript:void(0);';
+      svgDownloadBtn.addEventListener('click', () => downloadFile(svgUrl, 'qr-code.svg'));
+      btnContainer.appendChild(pngDownloadBtn);
+      btnContainer.appendChild(svgDownloadBtn);
+      qrCodeContainer.appendChild(btnContainer);
+      qrCodeContainer.style.display = 'block';
+    }
     document.getElementById('shortenForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const longUrl = document.getElementById('longUrl').value;
       const resultDiv = document.getElementById('result');
-      const qrCodeDiv = document.getElementById('qrCode');
-      resultDiv.style.display = 'none';
-      qrCodeDiv.style.display = 'none';
       try {
         const response = await fetch('/api/shorten', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: longUrl }),
+          body: JSON.stringify({ url: longUrl })
         });
         const data = await response.json();
         if (!data.error) {
           const shortUrl = data.shortUrl;
           resultDiv.innerHTML = `
-            <p><strong>Link encurtado:</strong></p>
-            <p><a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
+            <p><strong>Link encurtado:</strong>
+               <span class="shortened-link">${shortUrl}</span>
+            </p>
             <button onclick="copyToClipboard('${shortUrl}')">Copiar Link</button>
           `;
-          resultDiv.style.display = 'block';
           generateQRCode(shortUrl);
         } else {
           resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
-          resultDiv.style.display = 'block';
         }
       } catch (error) {
+        console.error(error);
         resultDiv.innerHTML = `<p>Ocorreu um erro inesperado.</p>`;
-        resultDiv.style.display = 'block';
       }
     });
     function copyToClipboard(text) {
@@ -220,32 +337,6 @@
         .catch((err) => {
           console.error('Erro ao copiar o link:', err);
         });
-    }
-    function generateQRCode(url) {
-      const qrCodeDiv = document.getElementById('qrCode');
-      qrCodeDiv.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
-      img.alt = 'QR Code';
-      qrCodeDiv.appendChild(img);
-
-      const downloadButtons = document.createElement('div');
-      downloadButtons.classList.add('download-buttons');
-
-      const pngButton = document.createElement('a');
-      pngButton.href = img.src;
-      pngButton.download = 'qr-code.png';
-      pngButton.textContent = 'Download PNG';
-
-      const svgButton = document.createElement('a');
-      svgButton.href = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&format=svg`;
-      svgButton.download = 'qr-code.svg';
-      svgButton.textContent = 'Download SVG';
-
-      downloadButtons.appendChild(pngButton);
-      downloadButtons.appendChild(svgButton);
-      qrCodeDiv.appendChild(downloadButtons);
-      qrCodeDiv.style.display = 'block';
     }
   </script>
 </body>
