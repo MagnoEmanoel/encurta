@@ -39,6 +39,10 @@
       display: flex;
       align-items: center;
       font-size: 16px;
+      cursor: pointer;
+    }
+    .navbar-title:hover {
+      text-decoration: underline;
     }
     .navbar-icon {
       width: 24px;
@@ -212,7 +216,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="navbar-title">
+    <div class="navbar-title" onclick="resetToInitial()">
       <img src="/images/link.png" alt="Ícone" class="navbar-icon" />
       <span>Encurta Link &amp; QR Code</span>
     </div>
@@ -236,6 +240,7 @@
       </div>
       <input type="url" id="longUrl" placeholder="Insira o link..." required />
       <button type="submit">Encurtar e Gerar QR</button>
+      <button type="button" id="newShortenButton" style="display:none;">Novo Encurtamento</button>
       <div id="result"></div>
       <div id="qrCode"></div>
     </form>
@@ -317,15 +322,18 @@
 
     document.getElementById('shortenForm').addEventListener('submit', async (event) => {
       event.preventDefault();
-      const longUrl = document.getElementById('longUrl').value;
+      const longUrl = document.getElementById('longUrl');
       const resultDiv = document.getElementById('result');
+      const newShortenButton = document.getElementById('newShortenButton');
+
       resultDiv.style.display = 'none';
+      newShortenButton.style.display = 'none';
 
       try {
         const response = await fetch('/api/shorten', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: longUrl })
+          body: JSON.stringify({ url: longUrl.value }),
         });
 
         const data = await response.json();
@@ -339,6 +347,7 @@
           `;
           resultDiv.style.display = 'block';
           generateQRCode(shortUrl);
+          newShortenButton.style.display = 'block';
         } else {
           resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
           resultDiv.style.display = 'block';
@@ -349,6 +358,23 @@
         resultDiv.style.display = 'block';
       }
     });
+
+    document.getElementById('newShortenButton').addEventListener('click', () => {
+      resetToInitial();
+    });
+
+    function resetToInitial() {
+      const longUrlInput = document.getElementById('longUrl');
+      const resultDiv = document.getElementById('result');
+      const qrCodeContainer = document.getElementById('qrCode');
+      const newShortenButton = document.getElementById('newShortenButton');
+
+      longUrlInput.value = '';
+      resultDiv.style.display = 'none';
+      qrCodeContainer.innerHTML = '';
+      qrCodeContainer.style.display = 'none';
+      newShortenButton.style.display = 'none';
+    }
 
     function copyToClipboard(text) {
       navigator.clipboard
